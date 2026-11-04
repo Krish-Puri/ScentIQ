@@ -1,0 +1,22 @@
+{
+  "name": "scentiq-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SCENTIQ - Evidence-led fragrance discovery and recommendation platform",
+  "scripts": {
+    "dev:web": "npm --prefix apps/web run dev",
+    "build:web": "npm --prefix apps/web run build",
+    "test:web": "npm --prefix apps/web run test",
+    "lint:web": "npm --prefix apps/web run lint",
+    "dev:api": "cd apps/api && uvicorn app.main:app --reload --port 8000",
+    "test:api": "pytest apps/api/tests",
+    "migrate": "cd apps/api && alembic upgrade head",
+    "test": "npm run test:api"
+  },
+  "workspaces": [
+    "apps/web"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

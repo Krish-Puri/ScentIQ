@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: scentiq-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-scentiq}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-scentiq_dev_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-scentiq}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-scentiq} -d ${POSTGRES_DB:-scentiq}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: scentiq-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://${POSTGRES_USER:-scentiq}:${POSTGRES_PASSWORD:-scentiq_dev_secret}@db:5432/${POSTGRES_DB:-scentiq}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./apps/api:/app/apps/api
+      - ./data:/app/data
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: scentiq-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    env_file:
+      - .env
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/web:/app/apps/web
+      - /app/apps/web/node_modules
+      - /app/apps/web/.next
+
+volumes:
+  postgres_data:
