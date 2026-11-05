@@ -21,6 +21,13 @@ class ParsedAdvisorIntent(BaseModel):
     excluded_characteristics: List[str] = Field(default_factory=list)
     occasions: List[str] = Field(default_factory=list)
     concentration: List[str] = Field(default_factory=list)
+    climate_context: List[str] = Field(default_factory=list)
+    reference_fragrances: List[str] = Field(default_factory=list)
+    is_alternative_search: bool = False
+    target_longevity: Optional[str] = None
+    is_ambiguous: bool = False
+    clarification_needed: bool = False
+    clarification_prompt: Optional[str] = None
     confidence_score: float = Field(default=1.0, ge=0.0, le=1.0)
     parsed_via: str = "deterministic_rule_parser"
 
@@ -38,3 +45,8 @@ class AdvisorRecommendResponse(BaseModel):
     explanation: str
     applied_avoid_terms: List[str]
     session_id: str
+    clarification_needed: bool = False
+    clarification_prompt: Optional[str] = None
+    conflict_detected: bool = False
+    conflict_details: Optional[str] = None
+

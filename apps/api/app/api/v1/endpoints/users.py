@@ -114,3 +114,4 @@ def get_learned_preferences(
     learning_service = PreferenceLearningService(db)
     summary = learning_service.compute_learned_preferences(uuid.UUID(user.sub))
     return ResponseEnvelope.success(data=summary)
+

@@ -28,3 +28,4 @@ Accepted and Implemented.
 - Guaranteed reproducibility of recommendations.
 - Zero black-box drift or invasive tracking.
 - Complete user control over personal data and explicit exclusions.
+

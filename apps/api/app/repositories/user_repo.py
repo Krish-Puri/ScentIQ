@@ -9,6 +9,8 @@ from sqlalchemy.orm import Session, joinedload
 from app.models.enums import FeedbackType
 from app.models.user import User, UserProfile, UserFeedback
 from app.models.fragrance import Fragrance
+from app.models.taxonomy import FragranceNote, FragranceAccord
+from sqlalchemy.orm import Session, joinedload, selectinload
 
 
 class UserRepository:
@@ -54,13 +56,17 @@ class UserRepository:
     ) -> List[UserFeedback]:
         stmt = (
             select(UserFeedback)
-            .options(joinedload(UserFeedback.fragrance).joinedload(Fragrance.brand))
+            .options(
+                joinedload(UserFeedback.fragrance).joinedload(Fragrance.brand),
+                joinedload(UserFeedback.fragrance).selectinload(Fragrance.notes).joinedload(FragranceNote.note),
+                joinedload(UserFeedback.fragrance).selectinload(Fragrance.accords).joinedload(FragranceAccord.accord),
+            )
             .where(UserFeedback.user_id == user_id)
         )
         if feedback_type:
             stmt = stmt.where(UserFeedback.feedback_type == feedback_type)
         stmt = stmt.order_by(UserFeedback.created_at.desc())
-        return list(self.db.execute(stmt).scalars().all())
+        return list(self.db.execute(stmt).scalars().unique().all())
 
     def get_feedback(self, user_id: uuid.UUID, fragrance_id: uuid.UUID) -> Optional[UserFeedback]:
         return self.db.execute(
@@ -108,3 +114,4 @@ class UserRepository:
         result = self.db.execute(stmt)
         self.db.commit()
         return result.rowcount > 0
+

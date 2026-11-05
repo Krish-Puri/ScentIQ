@@ -25,3 +25,4 @@ Accepted and Implemented.
 - Total protection against AI hallucinations and fake fragrance claims.
 - High resilience and offline testability via deterministic fallback parser.
 - Transparent constraint extraction surfaced directly in the UI.
+

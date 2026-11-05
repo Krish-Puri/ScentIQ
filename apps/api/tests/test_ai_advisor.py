@@ -87,3 +87,4 @@ def test_ai_advisor_fallback_on_empty_or_vague_message(client):
     assert res.status_code == 200
     data = res.json()["data"]
     assert isinstance(data["preferred_accords"], list)
+

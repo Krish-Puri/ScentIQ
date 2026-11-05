@@ -125,12 +125,17 @@ class UserFeedbackResponse(BaseModel):
 
 
 class LearnedPreferencesSummary(BaseModel):
-    """Transparent preference learning breakdown (EPIC-12)."""
+    """Transparent preference learning breakdown (EPIC-12 & Milestone 3)."""
     total_feedbacks: int
     liked_count: int
     disliked_count: int
     owned_count: int
+    neutral_count: int = 0
+    confidence_score: float = 0.0
+    evidence_score: float = 0.0
+    evidence_count: int = 0
     inferred_accord_weights: Dict[str, float]
     inferred_note_weights: Dict[str, float]
     inferred_family_weights: Dict[str, float]
     hard_avoid_terms: List[str]
+

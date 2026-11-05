@@ -31,9 +31,12 @@ from app.models.alternative import AlternativeRelationship
 from app.models.price import PriceListing
 
 
-def seed():
+def seed(db=None):
     print("Beginning SCENTIQ catalogue seeding...")
-    db = SessionLocal()
+    should_close = False
+    if db is None:
+        db = SessionLocal()
+        should_close = True
 
     try:
         # Check if already seeded
@@ -546,7 +549,8 @@ def seed():
         print(f"Error seeding database: {e}")
         raise
     finally:
-        db.close()
+        if should_close:
+            db.close()
 
 
 if __name__ == "__main__":

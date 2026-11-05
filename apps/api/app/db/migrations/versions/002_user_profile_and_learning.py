@@ -51,3 +51,4 @@ def downgrade() -> None:
         batch_op.drop_column('preferred_notes')
         batch_op.drop_column('preferred_families')
         batch_op.drop_column('familiarity_level')
+

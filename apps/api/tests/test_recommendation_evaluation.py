@@ -94,3 +94,4 @@ def test_offline_recommendation_quality_evaluation(db, seed_test_data):
     score_lift = pers_cand.score - baseline_cand.score
     assert score_lift > 0.0, f"Expected positive score lift from feedback learning, got {score_lift}"
     assert any("Positively boosted" in cue for cue in pers_cand.profile_match_cues)
+

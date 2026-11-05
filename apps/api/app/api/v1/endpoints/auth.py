@@ -31,3 +31,4 @@ def login(data: UserLoginRequest, db: Session = Depends(get_db)):
 @router.get("/me", response_model=ResponseEnvelope[dict])
 def get_current_user_profile(user: UserTokenPayload = Depends(get_current_user)):
     return ResponseEnvelope.success(data={"user_id": user.sub, "email": user.email, "role": user.role})
+

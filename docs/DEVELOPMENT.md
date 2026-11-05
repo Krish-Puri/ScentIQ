@@ -34,6 +34,9 @@ cd ../..
 
 # Seed verified catalogue and evidence sources
 python scripts/seed_catalogue.py
+
+# Expand catalogue with 50+ curated verified records
+python scripts/expand_catalogue.py
 ```
 
 ### Step 3: Frontend Dependencies
@@ -60,29 +63,47 @@ npm run dev:web
 
 ---
 
-## 3. Running with Docker Compose
+## 3. Running Automated Tests & Evaluation Harness
 
-To start the full PostgreSQL 16 database, FastAPI backend, and Next.js frontend in containers:
+### Run the full pytest suite (44 tests):
 ```bash
-docker compose up --build
+python -m pytest apps/api/tests -v
+```
+
+### Run Specific Test Suites:
+```bash
+# Recommendation IR Quality & Safety Benchmark (Precision@5, NDCG@5, Recall@10, Exclusion Rate)
+python -m pytest apps/api/tests/test_recommendation_benchmark.py -v
+
+# AI Fragrance Advisor NLP Robustness & Adversarial Testing
+python -m pytest apps/api/tests/test_ai_advisor_benchmark.py -v
+
+# PostgreSQL Constraints, Cascades, Concurrency & Security Audit
+python -m pytest apps/api/tests/test_postgres_reliability.py -v
+
+# Complete 14-Step Full User Journey Integration Test
+python -m pytest apps/api/tests/test_full_journey_e2e.py -v
+
+# Deterministic User Personalisation & Neutral Action Semantics
+python -m pytest apps/api/tests/test_user_personalisation.py -v
+```
+
+### Run Frontend Production Build & Playwright E2E:
+```bash
+# Production build check (compiles all routes)
+npm --prefix apps/web run build
+
+# Playwright E2E test
+npx --prefix apps/web playwright test
 ```
 
 ---
 
-## 4. Running Automated Tests
+## 4. Catalogue Governance & Quality Validation
 
-Run the full pytest suite across all units, repositories, validation rules, migrations, and endpoints:
+Validate database consistency, complete note pyramids, positive INR pricing, and evidence provenance:
 ```bash
-pytest -v
-```
-
-To run a specific test module:
-```bash
-pytest apps/api/tests/test_catalogue_admin.py -v
-pytest apps/api/tests/test_evidence_provenance.py -v
-pytest apps/api/tests/test_recommendations.py -v
-pytest apps/api/tests/test_comparisons.py -v
-pytest apps/api/tests/test_migrations.py -v
+python scripts/validate_catalogue_data.py
 ```
 
 ---
@@ -106,7 +127,7 @@ alembic downgrade -1
 ### Create a new revision:
 ```bash
 cd apps/api
-alembic revision -m "add_new_feature_table"
+alembic revision -m "description_of_change"
 ```
 
 ---
@@ -115,7 +136,7 @@ alembic revision -m "add_new_feature_table"
 
 - **Models (`apps/api/app/models/`)**: Pure SQLAlchemy 2.0 mapped models.
 - **Schemas (`apps/api/app/schemas/`)**: Pydantic v2 schemas. Every public response wraps data inside `ResponseEnvelope`.
+- **Evaluation (`apps/api/app/evaluation/`)**: IR metrics (Precision@5, NDCG@5, Diversity, Coverage), scenario datasets, and benchmark runner.
 - **Repositories (`apps/api/app/repositories/`)**: Encapsulates DB queries and transactions.
-- **Services (`apps/api/app/services/`)**: Business logic, curation state machines, evidence validation, and deterministic ranking.
+- **Services (`apps/api/app/services/`)**: Business logic, preference learning, AI intent parsing, and deterministic ranking engine.
 - **Endpoints (`apps/api/app/api/v1/endpoints/`)**: Fast, typed route handlers with dependency injection.
-

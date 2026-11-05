@@ -206,3 +206,58 @@ def test_personalised_recommendations_enforce_profile_and_boost_affinity(client,
     # Reference Eau (₹12,000) must be filtered out by user profile budget ceiling of ₹5,000
     assert "Reference Eau" not in result_names
     assert "Alternative Eau" in result_names
+
+
+def test_preference_learning_semantics_and_neutral_actions(client, seed_test_data):
+    """Verifies Milestone 3 Part 2 requirements:
+    - OWNED is strictly neutral (does not inflate note/accord preferences).
+    - TRIED without rating is strictly neutral.
+    - NOT_FOR_ME provides strong negative signal.
+    - Deletion / update is idempotent without duplicate count drift.
+    """
+    user = client.post("/api/v1/auth/register", json={"email": "neutralist@example.com", "password": "password123"}).json()["data"]
+    headers = {"Authorization": f"Bearer {user['access_token']}"}
+
+    frag_ref_id = str(seed_test_data["frag_ref"].id)
+    frag_cand_id = str(seed_test_data["frag_cand"].id)
+
+    # 1. Add OWNED feedback for Reference Eau (Citrus, Woody)
+    client.post("/api/v1/users/me/feedbacks", json={
+        "fragrance_id": frag_ref_id,
+        "feedback_type": FeedbackType.OWNED.value,
+    }, headers=headers)
+
+    # 2. Add unrated TRIED feedback for Candidate Eau
+    client.post("/api/v1/users/me/feedbacks", json={
+        "fragrance_id": frag_cand_id,
+        "feedback_type": FeedbackType.TRIED.value,
+    }, headers=headers)
+
+    learn_res = client.get("/api/v1/users/me/preferences/learned", headers=headers)
+    assert learn_res.status_code == 200
+    learned = learn_res.json()["data"]
+    assert learned["total_feedbacks"] == 2
+    assert learned["owned_count"] == 1
+    assert learned["neutral_count"] == 2
+    assert learned["liked_count"] == 0
+    assert learned["disliked_count"] == 0
+    # Crucial requirement: OWNED and unrated TRIED must NOT inflate scent weights
+    assert len(learned["inferred_accord_weights"]) == 0
+    assert len(learned["inferred_note_weights"]) == 0
+
+    # 3. Add NOT_FOR_ME feedback (strong negative)
+    client.post("/api/v1/users/me/feedbacks", json={
+        "fragrance_id": frag_cand_id,
+        "feedback_type": FeedbackType.NOT_FOR_ME.value,
+        "reason": "Induces headache",
+    }, headers=headers)
+
+    learn_res2 = client.get("/api/v1/users/me/preferences/learned", headers=headers)
+    learned2 = learn_res2.json()["data"]
+    # Total feedbacks is still 2 (upsert on candidate)
+    assert learned2["total_feedbacks"] == 2
+    assert learned2["disliked_count"] == 1
+    assert learned2["confidence_score"] > 0.0
+    # Negative weights inferred
+    assert any(v < 0 for v in learned2["inferred_accord_weights"].values())
+
