@@ -88,6 +88,13 @@ class AlternativeService:
         if not reviewer_id:
             raise ValidationError("Reviewer ID is required for approving an alternative relationship")
 
+        # PRD Section 11.5: Independent dual-review enforcement
+        if rel.curator_id and reviewer_id == rel.curator_id:
+            raise ValidationError(
+                "Independent dual-review required: the reviewer approving publication must be distinct from the curator who created the record",
+                field="reviewer_id",
+            )
+
         rel.status = CurationStatus.PUBLISHED
         rel.reviewer_id = reviewer_id
         rel.reviewed_at = datetime.now(timezone.utc)

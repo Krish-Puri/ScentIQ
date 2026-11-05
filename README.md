@@ -19,7 +19,7 @@
 - **Frontend**: Next.js 14 App Router, TypeScript, Tailwind CSS, Lucide Icons.
 - **Backend**: Python 3.12, FastAPI, Pydantic v2 Settings & Schemas, SQLAlchemy 2.0.
 - **Database & Migrations**: PostgreSQL 16 (production/Docker) & SQLite (isolated local/test run), Alembic migrations.
-- **Testing & CI**: Pytest suite (19 unit/integration/migration tests), GitHub Actions CI.
+- **Testing & CI**: Pytest suite (31 unit, integration, personalization, intent parsing and migration tests), GitHub Actions CI.
 
 ---
 
@@ -146,6 +146,9 @@ scentiq/
 | **EPIC-04** | Evidence & Provenance | **Completed** | Source rights register, claim-to-source mapping, directional alternative relationships with types and A/B/C grades, dual-review moderation gate. |
 | **EPIC-05** | Public Catalogue APIs | **Completed** | `/api/v1/fragrances`, `/api/v1/fragrances/{slug}`, filtering by family, notes, accords, prices, draft suppression. |
 | **EPIC-06** | Web Client Shell | **Completed** | Responsive Next.js App Router client, live discovery shortlist, side-by-side comparison screen, fragrance dossiers, evidence badges. |
-| **EPIC-08** | Recommendation Ranker | **Completed** | Deterministic multi-factor scoring formula from PRD Section 12.3, hard avoid exclusions, budget limits, sample-first advice. |
+| **EPIC-07** | User Onboarding & Profile | **Completed** | Multi-step fragrance onboarding wizard (`/onboarding`), persistent user profile (`/profile`), familiarity calibration, preferred scent families/notes/accords, hard avoid exclusions, authenticated `/users/me/profile`. |
+| **EPIC-08** | Recommendation Ranker | **Completed** | Deterministic multi-factor scoring formula from PRD Section 12.3, hard avoid exclusions, budget limits, sample-first advice, personal profile integration. |
 | **EPIC-10** | Comparison Service | **Completed** | Side-by-side comparison endpoint and UI, shared/distinguishing notes, missing data disclosures, price-per-ml calculation. |
+| **EPIC-11** | AI Fragrance Advisor | **Completed** | Bounded natural-language intent parser (`/advisor`), structured Pydantic constraint validation, dual-mode (Gemini LLM + deterministic NLP fallback), evidence-grounded rationale. |
+| **EPIC-12** | Preference Learning | **Completed** | Fragrance feedback interactions (`LIKE`, `DISLIKE`, `OWNED`, `TRIED`), transparent accord and note weight derivation, personalized scoring adjustments without ML black-boxes. |
 

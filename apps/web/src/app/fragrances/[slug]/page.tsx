@@ -6,6 +6,8 @@ import Link from "next/link";
 import {
   fetchFragranceDetail,
   fetchAlternatives,
+  submitUserFeedback,
+  getStoredToken,
   FragranceDetail,
   AlternativeItem,
 } from "@/lib/api";
@@ -28,6 +30,33 @@ export default function FragranceDetailPage() {
   const [fragrance, setFragrance] = useState<FragranceDetail | null>(null);
   const [alternatives, setAlternatives] = useState<AlternativeItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // User Feedback States (EPIC-12)
+  const [userRating, setUserRating] = useState<number>(0);
+  const [userReason, setUserReason] = useState<string>("");
+  const [activeFeedback, setActiveFeedback] = useState<string | null>(null);
+  const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
+  const [savingFeedback, setSavingFeedback] = useState<boolean>(false);
+
+  const handleFeedback = async (type: string) => {
+    if (!fragrance) return;
+    setSavingFeedback(true);
+    setFeedbackMsg(null);
+    try {
+      await submitUserFeedback(
+        fragrance.id,
+        type,
+        userRating > 0 ? userRating : undefined,
+        userReason.trim() ? userReason : undefined
+      );
+      setActiveFeedback(type);
+      setFeedbackMsg(`Saved to your profile as "${type}". Recommendation weights updated.`);
+    } catch (err: any) {
+      setFeedbackMsg(err.message || "Please sign in or complete onboarding to record feedback.");
+    } finally {
+      setSavingFeedback(false);
+    }
+  };
 
   useEffect(() => {
     if (!slug) return;
@@ -94,6 +123,105 @@ export default function FragranceDetailPage() {
               <span className="text-slate-500 text-[11px]">Nose: {fragrance.perfumer_text}</span>
             )}
           </div>
+        </div>
+
+        {/* User Fragrance Feedback (EPIC-12) */}
+        <div className="bg-[#FAF9F5] border border-stone-200 rounded-xl p-5">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono uppercase tracking-wider font-bold text-slate-800">
+                  Wardrobe & Feedback Interaction
+                </span>
+                <span className="text-[9px] font-mono px-1.5 py-0.2 bg-amber-100 text-amber-800 rounded">
+                  EPIC-12
+                </span>
+              </div>
+              <p className="text-xs text-stone-500">
+                Log this fragrance to your wardrobe or record personal wear feedback to refine future recommendations.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                disabled={savingFeedback}
+                onClick={() => handleFeedback("LIKE")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                  activeFeedback === "LIKE"
+                    ? "bg-emerald-600 text-white border-emerald-600"
+                    : "bg-white border-stone-200 text-stone-700 hover:bg-stone-50"
+                }`}
+              >
+                ★ Like
+              </button>
+              <button
+                type="button"
+                disabled={savingFeedback}
+                onClick={() => handleFeedback("OWNED")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                  activeFeedback === "OWNED"
+                    ? "bg-amber-600 text-white border-amber-600"
+                    : "bg-white border-stone-200 text-stone-700 hover:bg-stone-50"
+                }`}
+              >
+                ✓ Own
+              </button>
+              <button
+                type="button"
+                disabled={savingFeedback}
+                onClick={() => handleFeedback("TRIED")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                  activeFeedback === "TRIED"
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-white border-stone-200 text-stone-700 hover:bg-stone-50"
+                }`}
+              >
+                👁 Tried
+              </button>
+              <button
+                type="button"
+                disabled={savingFeedback}
+                onClick={() => handleFeedback("DISLIKE")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                  activeFeedback === "DISLIKE"
+                    ? "bg-rose-600 text-white border-rose-600"
+                    : "bg-white border-stone-200 text-stone-700 hover:bg-stone-50"
+                }`}
+              >
+                ✕ Dislike
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-3 border-t border-stone-200/60">
+            <input
+              type="text"
+              placeholder="Optional: reason for liking/disliking, drydown wear notes..."
+              value={userReason}
+              onChange={(e) => setUserReason(e.target.value)}
+              className="flex-1 px-3 py-1.5 bg-white border border-stone-200 rounded text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+            />
+            <div className="flex items-center gap-1 text-xs">
+              <span className="text-stone-400 font-mono text-[11px]">Rating:</span>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setUserRating(star)}
+                  className={`text-base leading-none ${star <= userRating ? "text-amber-500" : "text-stone-300"}`}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {feedbackMsg && (
+            <div className="mt-2 text-xs font-medium text-emerald-800 bg-emerald-50 p-2 rounded border border-emerald-200">
+              {feedbackMsg}
+            </div>
+          )}
         </div>
 
         {/* Note Pyramid & Accords */}

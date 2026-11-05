@@ -11,7 +11,7 @@ import pytest
 from app.models.enums import CurationStatus, EvidenceGrade, LicenseStatus, RelationshipType
 
 
-def test_create_evidence_source(client):
+def test_create_evidence_source(client, curator_headers):
     payload = {
         "title": "Scento CC BY 4.0 Verified Archive",
         "url": "https://huggingface.co/datasets/scento/perfume-database",
@@ -20,14 +20,14 @@ def test_create_evidence_source(client):
         "license_status": "CC_BY_4_0",
         "attribution_text": "Dataset licensed under Creative Commons Attribution 4.0 International",
     }
-    response = client.post("/api/v1/admin/evidence-sources", json=payload)
+    response = client.post("/api/v1/admin/evidence-sources", json=payload, headers=curator_headers)
     assert response.status_code == 200
     data = response.json()["data"]
     assert data["license_status"] == LicenseStatus.CC_BY_4_0.value
     assert data["publisher"] == "Scento Open Research"
 
 
-def test_propose_alternative_relationship(client, seed_test_data):
+def test_propose_alternative_relationship(client, seed_test_data, curator_headers, reviewer_headers):
     source_id = str(seed_test_data["frag_ref"].id)
     cand_id = str(seed_test_data["frag_cand"].id)
 
@@ -37,7 +37,7 @@ def test_propose_alternative_relationship(client, seed_test_data):
         "brand_id": brand_id,
         "canonical_name": "Proposed Clone",
         "concentration": "EDP",
-    }).json()["data"]
+    }, headers=curator_headers).json()["data"]
 
     payload = {
         "source_fragrance_id": source_id,
@@ -47,7 +47,7 @@ def test_propose_alternative_relationship(client, seed_test_data):
         "rationale": "Community reports 85% drydown resemblance on skin.",
         "known_differences": "Proposed clone has sharper bergamot opening.",
     }
-    response = client.post("/api/v1/admin/alternatives", json=payload)
+    response = client.post("/api/v1/admin/alternatives", json=payload, headers=curator_headers)
     assert response.status_code == 200
     res = response.json()["data"]
     assert res["status"] == CurationStatus.DRAFT.value
@@ -63,7 +63,7 @@ def test_propose_alternative_relationship(client, seed_test_data):
         "approved": True,
         "reviewer_id": "senior-curator-reviewer",
         "review_notes": "Verified against 15 independent community reports and note pyramids.",
-    })
+    }, headers=reviewer_headers)
     assert approve_res.status_code == 200
     assert approve_res.json()["data"]["status"] == CurationStatus.PUBLISHED.value
 
@@ -73,7 +73,7 @@ def test_propose_alternative_relationship(client, seed_test_data):
     assert rel_id in public_alt_ids_after
 
 
-def test_self_referencing_alternative_rejected(client, seed_test_data):
+def test_self_referencing_alternative_rejected(client, seed_test_data, curator_headers):
     frag_id = str(seed_test_data["frag_ref"].id)
     payload = {
         "source_fragrance_id": frag_id,
@@ -81,7 +81,39 @@ def test_self_referencing_alternative_rejected(client, seed_test_data):
         "relationship_type": RelationshipType.SIMILAR_PROFILE.value,
         "evidence_grade": EvidenceGrade.C_PROVISIONAL.value,
     }
-    response = client.post("/api/v1/admin/alternatives", json=payload)
+    response = client.post("/api/v1/admin/alternatives", json=payload, headers=curator_headers)
     assert response.status_code == 400
     assert "cannot be marked as an alternative to itself" in response.json()["errors"][0]["message"]
+
+
+def test_dual_review_prevents_curator_self_approval(client, seed_test_data, curator_headers, reviewer_headers):
+    source_id = str(seed_test_data["frag_ref"].id)
+    cand_id = str(seed_test_data["frag_cand"].id)
+
+    brand_id = str(seed_test_data["brand2"].id)
+    new_frag = client.post("/api/v1/admin/fragrances", json={
+        "brand_id": brand_id,
+        "canonical_name": "Dual Review Test Frag",
+        "concentration": "EDP",
+    }, headers=curator_headers).json()["data"]
+
+    payload = {
+        "source_fragrance_id": source_id,
+        "candidate_fragrance_id": new_frag["id"],
+        "relationship_type": RelationshipType.BRAND_MARKETED.value,
+        "evidence_grade": EvidenceGrade.A_STRONG.value,
+        "rationale": "Brand explicitly states inspiration in creative brief.",
+    }
+    # Created with curator_headers (sub: "curator-1")
+    rel_res = client.post("/api/v1/admin/alternatives", json=payload, headers=curator_headers)
+    rel_id = rel_res.json()["data"]["id"]
+
+    # Attempting to self-approve with curator-1 as reviewer -> rejected
+    self_approve_res = client.patch(f"/api/v1/admin/alternatives/{rel_id}/approve", json={
+        "approved": True,
+        "reviewer_id": "curator-1",
+        "review_notes": "Attempting self-approval",
+    }, headers=reviewer_headers)
+    assert self_approve_res.status_code == 400
+    assert "Independent dual-review required" in self_approve_res.json()["errors"][0]["message"]
 

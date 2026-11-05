@@ -3,6 +3,9 @@
 from fastapi import APIRouter
 from app.api.v1.endpoints import (
     health,
+    auth,
+    users,
+    advisor,
     fragrances,
     alternatives,
     comparisons,
@@ -15,6 +18,15 @@ api_router = APIRouter()
 
 # Health & Status
 api_router.include_router(health.router, tags=["Health"])
+
+# Authentication & Registration
+api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+
+# User Profile, Onboarding & Feedback
+api_router.include_router(users.router, prefix="/users", tags=["Users & Personalisation"])
+
+# AI Fragrance Advisor
+api_router.include_router(advisor.router, prefix="/advisor", tags=["AI Fragrance Advisor"])
 
 # Catalogue & Search
 api_router.include_router(fragrances.router, prefix="/fragrances", tags=["Fragrances"])

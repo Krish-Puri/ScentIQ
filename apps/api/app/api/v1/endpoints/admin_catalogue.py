@@ -41,7 +41,7 @@ class StatusTransitionRequest(BaseModel):
 def create_brand(
     data: BrandCreate,
     db: Session = Depends(get_db),
-    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin", "guest"])),
+    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin"])),
 ):
     repo = BrandRepository(db)
     slug = data.slug or slugify(data.canonical_name)
@@ -62,7 +62,7 @@ def create_brand(
 def create_note(
     data: NoteCreate,
     db: Session = Depends(get_db),
-    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin", "guest"])),
+    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin"])),
 ):
     repo = TaxonomyRepository(db)
     slug = data.slug or slugify(data.canonical_name)
@@ -81,7 +81,7 @@ def create_note(
 def create_accord(
     data: AccordCreate,
     db: Session = Depends(get_db),
-    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin", "guest"])),
+    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin"])),
 ):
     repo = TaxonomyRepository(db)
     slug = data.slug or slugify(data.canonical_name)
@@ -99,7 +99,7 @@ def create_accord(
 def create_draft_fragrance(
     data: FragranceCreate,
     db: Session = Depends(get_db),
-    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin", "guest"])),
+    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin"])),
 ):
     service = CatalogueService(db)
     created = service.create_fragrance(data, curator_id=user.sub)
@@ -129,7 +129,7 @@ def transition_fragrance_status(
     id: uuid.UUID,
     request: StatusTransitionRequest,
     db: Session = Depends(get_db),
-    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin", "guest"])),
+    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin"])),
 ):
     service = CatalogueService(db)
     updated = service.transition_status(
@@ -164,7 +164,7 @@ def attach_fragrance_note(
     id: uuid.UUID,
     data: FragranceNoteCreate,
     db: Session = Depends(get_db),
-    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin", "guest"])),
+    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin"])),
 ):
     repo = TaxonomyRepository(db)
     fn = FragranceNote(
@@ -183,7 +183,7 @@ def attach_fragrance_accord(
     id: uuid.UUID,
     data: FragranceAccordCreate,
     db: Session = Depends(get_db),
-    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin", "guest"])),
+    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin"])),
 ):
     repo = TaxonomyRepository(db)
     fa = FragranceAccord(

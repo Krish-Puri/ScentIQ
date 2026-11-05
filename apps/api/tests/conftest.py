@@ -70,6 +70,34 @@ def client(db: Session) -> Generator[TestClient, None, None]:
 
 
 @pytest.fixture(scope="function")
+def curator_headers() -> dict:
+    from app.core.security import create_access_token
+    token = create_access_token({"sub": "curator-1", "role": "curator"})
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture(scope="function")
+def reviewer_headers() -> dict:
+    from app.core.security import create_access_token
+    token = create_access_token({"sub": "reviewer-1", "role": "reviewer"})
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture(scope="function")
+def admin_headers() -> dict:
+    from app.core.security import create_access_token
+    token = create_access_token({"sub": "admin-1", "role": "admin"})
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture(scope="function")
+def user_headers() -> dict:
+    from app.core.security import create_access_token
+    token = create_access_token({"sub": "user-1", "role": "user"})
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture(scope="function")
 def seed_test_data(db: Session):
     """Seeds a minimal verified dataset for tests."""
     source = EvidenceSource(

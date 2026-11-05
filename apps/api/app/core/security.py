@@ -2,15 +2,13 @@
 """
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
-from passlib.context import CryptContext
+import bcrypt
 from jose import jwt, JWTError
 from fastapi import Depends, Header, HTTPException, status
 from pydantic import BaseModel
 
 from app.core.config import settings
 from app.core.errors import AuthRequiredError, ForbiddenError
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class UserTokenPayload(BaseModel):
@@ -21,11 +19,16 @@ class UserTokenPayload(BaseModel):
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        return bcrypt.checkpw(plain_password.encode("utf-8")[:72], hashed_password.encode("utf-8"))
+    except Exception:
+        return False
 
 
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    pwd_bytes = password.encode("utf-8")[:72]
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(pwd_bytes, salt).decode("utf-8")
 
 
 def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
@@ -46,10 +49,9 @@ def decode_token(token: str) -> UserTokenPayload:
 
 
 def get_current_user(authorization: Optional[str] = Header(None)) -> UserTokenPayload:
-    """Dependency for authenticated routes. Defaults to guest payload if no auth header present."""
+    """Dependency for strictly authenticated routes. Requires a valid Bearer token."""
     if not authorization:
-        # Return guest identity for public/guest-allowed endpoints
-        return UserTokenPayload(sub="guest-anonymous", role="guest")
+        raise AuthRequiredError("Authentication required: missing Authorization header")
 
     scheme, _, token = authorization.partition(" ")
     if scheme.lower() != "bearer" or not token:
@@ -58,10 +60,23 @@ def get_current_user(authorization: Optional[str] = Header(None)) -> UserTokenPa
     return decode_token(token)
 
 
+def get_optional_user(authorization: Optional[str] = Header(None)) -> UserTokenPayload:
+    """Dependency for endpoints that can optionally personalize if a token is present, else default to guest."""
+    if not authorization:
+        return UserTokenPayload(sub="guest-anonymous", role="guest")
+
+    try:
+        scheme, _, token = authorization.partition(" ")
+        if scheme.lower() == "bearer" and token:
+            return decode_token(token)
+    except Exception:
+        pass
+    return UserTokenPayload(sub="guest-anonymous", role="guest")
+
+
 def require_role(allowed_roles: List[str]):
     """Enforces specific user roles (e.g. curator, reviewer, admin)."""
     def role_checker(current_user: UserTokenPayload = Depends(get_current_user)):
-        # For development ease and testing, an 'admin' token or development bypass can be supported
         if current_user.role not in allowed_roles and current_user.role != "admin":
             raise ForbiddenError(f"Role '{current_user.role}' lacks permission for this action")
         return current_user

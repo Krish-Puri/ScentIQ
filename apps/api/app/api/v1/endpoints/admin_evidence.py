@@ -29,7 +29,7 @@ router = APIRouter()
 def create_evidence_source(
     data: EvidenceSourceCreate,
     db: Session = Depends(get_db),
-    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin", "guest"])),
+    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin"])),
 ):
     service = EvidenceService(db)
     created = service.create_source(data)
@@ -40,7 +40,7 @@ def create_evidence_source(
 def create_claim_evidence(
     data: ClaimEvidenceCreate,
     db: Session = Depends(get_db),
-    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin", "guest"])),
+    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin"])),
 ):
     service = EvidenceService(db)
     created = service.create_claim(data, reviewer_id=user.sub)
@@ -51,7 +51,7 @@ def create_claim_evidence(
 def propose_alternative(
     data: AlternativeCreate,
     db: Session = Depends(get_db),
-    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin", "guest"])),
+    user: UserTokenPayload = Depends(require_role(["curator", "reviewer", "admin"])),
 ):
     service = AlternativeService(db)
     created = service.create_alternative(data, curator_id=user.sub)
@@ -81,7 +81,7 @@ def approve_alternative(
     id: uuid.UUID,
     data: AlternativeApprovalRequest,
     db: Session = Depends(get_db),
-    user: UserTokenPayload = Depends(require_role(["reviewer", "admin", "guest"])),
+    user: UserTokenPayload = Depends(require_role(["reviewer", "admin"])),
 ):
     service = AlternativeService(db)
     updated = service.approve_and_publish(

@@ -4,7 +4,7 @@ Strictly adheres to PRD Section 10.1, Section 15.1 (Data Minimisation) and Secti
 import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, Enum as SQLEnum, JSON
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, Enum as SQLEnum, JSON, Boolean, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, GUID, TimestampMixin
@@ -47,14 +47,23 @@ class UserProfile(Base, TimestampMixin):
     user_id: Mapped[uuid.UUID] = mapped_column(
         GUID, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False, index=True
     )
-    # Stored preference dimensions (e.g. {"fresh": 0.8, "woody": 0.6, "sweet": -0.5})
-    preference_vector_json: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)
+    familiarity_level: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # new, casual, enthusiast, collector
+    preferred_families: Mapped[List[str]] = mapped_column(JSON, default=list)
+    preferred_notes: Mapped[List[str]] = mapped_column(JSON, default=list)
+    disliked_notes: Mapped[List[str]] = mapped_column(JSON, default=list)
+    preferred_accords: Mapped[List[str]] = mapped_column(JSON, default=list)
+    disliked_accords: Mapped[List[str]] = mapped_column(JSON, default=list)
     avoid_terms: Mapped[List[str]] = mapped_column(JSON, default=list)  # Notes/accords to strictly exclude
     budget_min: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     budget_max: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     occasions: Mapped[List[str]] = mapped_column(JSON, default=list)
+    preferred_concentrations: Mapped[List[str]] = mapped_column(JSON, default=list)
+    longevity_preference: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    projection_preference: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     climate_context: Mapped[List[str]] = mapped_column(JSON, default=list)
     intensity_preference: Mapped[Optional[str]] = mapped_column(String(50), default="moderate")
+    preference_vector_json: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)
+    onboarding_completed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     user: Mapped["User"] = relationship("User", back_populates="profile")
 
@@ -62,6 +71,9 @@ class UserProfile(Base, TimestampMixin):
 class UserFeedback(Base):
     """Explicit user feedback on fragrances (like, dislike, tried, owned)."""
     __tablename__ = "user_feedbacks"
+    __table_args__ = (
+        UniqueConstraint("user_id", "fragrance_id", name="uq_user_fragrance_feedback"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(GUID, primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(
@@ -82,8 +94,15 @@ class UserFeedback(Base):
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
 
     user: Mapped["User"] = relationship("User", back_populates="feedbacks")
+    fragrance: Mapped["Fragrance"] = relationship("Fragrance", lazy="joined")
 
 
 class RecommendationRun(Base):
