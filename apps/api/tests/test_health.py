@@ -23,3 +23,4 @@ def test_custom_request_id_propagated(client):
     assert response.status_code == 200
     assert response.headers.get("X-Request-ID") == custom_id
     assert response.json()["meta"]["request_id"] == custom_id
+

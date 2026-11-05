@@ -36,3 +36,4 @@ class BrandResponse(BrandBase):
     slug: str
     created_at: datetime
     updated_at: datetime
+

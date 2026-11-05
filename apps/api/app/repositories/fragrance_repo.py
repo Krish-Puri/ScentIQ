@@ -121,3 +121,4 @@ class FragranceRepository:
         self.db.commit()
         self.db.refresh(fragrance)
         return fragrance
+

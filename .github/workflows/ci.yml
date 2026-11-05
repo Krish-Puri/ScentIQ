@@ -83,3 +83,4 @@ jobs:
         working-directory: ./apps/web
         run: |
           npm run build
+

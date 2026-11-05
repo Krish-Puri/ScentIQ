@@ -50,3 +50,4 @@ def test_fragrance_detail_by_slug(client, seed_test_data):
     assert len(data["prices"]) == 1
     assert data["prices"][0]["price_inr"] == 12000.0
     assert data["evidence_count"] >= 1
+

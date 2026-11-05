@@ -96,3 +96,4 @@ class FragranceAccord(Base):
     __table_args__ = (
         UniqueConstraint("fragrance_id", "accord_id", name="uq_fragrance_accord"),
     )
+

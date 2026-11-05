@@ -31,3 +31,4 @@ api_router.include_router(recommendations.router, prefix="/recommendations", tag
 # Admin & Curator operations
 api_router.include_router(admin_catalogue.router, prefix="/admin", tags=["Admin Catalogue"])
 api_router.include_router(admin_evidence.router, prefix="/admin", tags=["Admin Evidence"])
+

@@ -66,3 +66,4 @@ Alternative relationships are directional (`candidate` -> `reference`) and must 
 ### 4.2 Consumer Protection (E-Commerce) Amendment Rules, 2026
 - **Ranking Transparency**: Organic discovery algorithms must not favor sellers or brands on the basis of hidden fees or commissions.
 - **Observed Pricing**: All price displays in INR include seller name, bottle size (ml), calculated price-per-ml, and observed date timestamp. No guaranteed live pricing claims are made.
+

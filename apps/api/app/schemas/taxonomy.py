@@ -73,3 +73,4 @@ class FragranceAccordResponse(BaseModel):
     accord_name: Optional[str] = None
     intensity_rank: int
     confidence: float
+

@@ -118,3 +118,4 @@ alembic revision -m "add_new_feature_table"
 - **Repositories (`apps/api/app/repositories/`)**: Encapsulates DB queries and transactions.
 - **Services (`apps/api/app/services/`)**: Business logic, curation state machines, evidence validation, and deterministic ranking.
 - **Endpoints (`apps/api/app/api/v1/endpoints/`)**: Fast, typed route handlers with dependency injection.
+

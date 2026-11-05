@@ -2,3 +2,4 @@
 pythonpath = ["apps/api"]
 testpaths = ["apps/api/tests"]
 asyncio_mode = "auto"
+

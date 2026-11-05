@@ -54,3 +54,4 @@ class AlternativeResponse(BaseModel):
     candidate_brand: Optional[str] = None
     candidate_concentration: Optional[str] = None
     candidate_indicative_price_inr: Optional[float] = None
+

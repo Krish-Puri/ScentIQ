@@ -68,3 +68,4 @@ class Fragrance(Base, TimestampMixin):
 
     def __repr__(self) -> str:
         return f"<Fragrance {self.canonical_name} ({self.concentration}) [{self.status.value}]>"
+

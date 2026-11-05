@@ -33,3 +33,4 @@ class ComparisonResponse(BaseModel):
     shared_accords: List[str] = Field(default_factory=list)
     distinguishing_notes: List[str] = Field(default_factory=list)
     missing_data_disclosures: List[str] = Field(default_factory=list)
+

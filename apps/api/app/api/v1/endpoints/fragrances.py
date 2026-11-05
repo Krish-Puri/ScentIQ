@@ -134,3 +134,4 @@ def get_fragrance_by_slug(slug: str, db: Session = Depends(get_db)):
     )
 
     return ResponseEnvelope.success(data=detail)
+

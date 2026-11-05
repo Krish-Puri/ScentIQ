@@ -38,3 +38,4 @@ class EvidenceRepository:
             .order_by(ClaimEvidence.created_at.desc())
         )
         return list(self.db.execute(stmt).scalars().all())
+

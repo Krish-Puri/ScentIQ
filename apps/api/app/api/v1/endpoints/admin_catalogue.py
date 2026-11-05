@@ -195,3 +195,4 @@ def attach_fragrance_accord(
     )
     repo.add_fragrance_accord(fa)
     return ResponseEnvelope.success(data={"status": "attached", "fragrance_id": str(id), "accord_id": str(data.accord_id)})
+

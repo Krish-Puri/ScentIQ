@@ -278,3 +278,4 @@ def downgrade() -> None:
     op.drop_table('accords')
     op.drop_table('notes')
     op.drop_table('brands')
+

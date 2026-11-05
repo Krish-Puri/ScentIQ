@@ -47,3 +47,4 @@ class EvidenceService:
 
     def get_claims_for_entity(self, entity_type: str, entity_id: uuid.UUID) -> List[ClaimEvidence]:
         return self.evidence_repo.get_claims_for_entity(entity_type, entity_id)
+

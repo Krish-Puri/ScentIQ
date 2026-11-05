@@ -65,3 +65,4 @@ def test_hard_budget_ceiling_filters_expensive_fragrances(client, seed_test_data
     frag_ids = [r["fragrance_id"] for r in results]
     assert str(seed_test_data["frag_ref"].id) not in frag_ids
     assert str(seed_test_data["frag_cand"].id) in frag_ids
+

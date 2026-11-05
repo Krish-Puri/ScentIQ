@@ -148,3 +148,4 @@ scentiq/
 | **EPIC-06** | Web Client Shell | **Completed** | Responsive Next.js App Router client, live discovery shortlist, side-by-side comparison screen, fragrance dossiers, evidence badges. |
 | **EPIC-08** | Recommendation Ranker | **Completed** | Deterministic multi-factor scoring formula from PRD Section 12.3, hard avoid exclusions, budget limits, sample-first advice. |
 | **EPIC-10** | Comparison Service | **Completed** | Side-by-side comparison endpoint and UI, shared/distinguishing notes, missing data disclosures, price-per-ml calculation. |
+

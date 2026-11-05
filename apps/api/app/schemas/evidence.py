@@ -49,3 +49,4 @@ class ClaimEvidenceResponse(ClaimEvidenceBase):
     reviewer_id: Optional[str] = None
     reviewed_at: Optional[datetime] = None
     created_at: datetime
+

@@ -86,3 +86,4 @@ class ListingStatus(str, Enum):
     ACTIVE = "ACTIVE"
     STALE = "STALE"
     SUPPRESSED = "SUPPRESSED"
+

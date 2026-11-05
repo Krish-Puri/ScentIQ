@@ -103,3 +103,4 @@ def test_curation_transition_with_provenance_and_audit(client, db, seed_test_dat
     actions = [a.action for a in audits]
     assert "CREATE_FRAGRANCE" in actions
     assert "TRANSITION_PUBLISHED" in actions
+

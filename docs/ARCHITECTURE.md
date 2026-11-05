@@ -91,3 +91,4 @@ $$\text{Score} = 0.30 \cdot F_{\text{scent}} + 0.18 \cdot F_{\text{notes}} + 0.1
 - **Hard Exclusions**: If a fragrance contains any user avoid term in its notes, accords, or family, it is immediately discarded prior to scoring.
 - **Budget Ceiling**: If user marks a hard budget limit, fragrances exceeding the lowest observed INR price are excluded.
 - **Sample-First Trigger**: If composite fit score $< 0.70$ or if note pyramid is incomplete, the system prompts the user to order a decant sample before blind buying.
+

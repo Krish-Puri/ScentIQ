@@ -37,3 +37,4 @@ def test_comparison_validation_minimum_items(client, seed_test_data):
     payload = {"fragrance_ids": [ref_id]}
     response = client.post("/api/v1/comparisons", json=payload)
     assert response.status_code == 400
+

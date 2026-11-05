@@ -20,3 +20,4 @@ def get_recommendations(
     service = RecommendationService(db)
     result = service.recommend(request)
     return ResponseEnvelope.success(data=result)
+

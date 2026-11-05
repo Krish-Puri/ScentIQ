@@ -92,3 +92,4 @@ class ConstraintUnsatisfiedError(AppException):
             code=ErrorCode.CONSTRAINT_UNSATISFIED,
             message=message,
         )
+

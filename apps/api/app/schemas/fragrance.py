@@ -88,3 +88,4 @@ class FragranceFilterParams(BaseModel):
     sort: str = "canonical_name"
     limit: int = Field(20, ge=1, le=100)
     offset: int = Field(0, ge=0)
+

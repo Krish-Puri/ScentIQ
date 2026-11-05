@@ -30,3 +30,4 @@ def get_fragrance_alternatives(
         public_only=True,
     )
     return ResponseEnvelope.success(data=alternatives, total=len(alternatives))
+

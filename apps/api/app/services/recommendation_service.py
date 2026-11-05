@@ -192,3 +192,4 @@ class RecommendationService:
             session_id=request.session_id,
             total_evaluated=len(candidates),
         )
+

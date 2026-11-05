@@ -20,3 +20,4 @@ Both frontend and backend are independently runnable while sharing root-level or
 
 ### Negative
 - Single repository size will grow over time, necessitating disciplined module boundaries and git hygiene.
+

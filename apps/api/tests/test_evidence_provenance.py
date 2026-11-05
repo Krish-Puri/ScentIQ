@@ -84,3 +84,4 @@ def test_self_referencing_alternative_rejected(client, seed_test_data):
     response = client.post("/api/v1/admin/alternatives", json=payload)
     assert response.status_code == 400
     assert "cannot be marked as an alternative to itself" in response.json()["errors"][0]["message"]
+

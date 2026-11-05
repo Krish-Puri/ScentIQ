@@ -149,3 +149,4 @@ class CatalogueService:
                     f"Publication blocked: Source '{claim.source.title}' is marked PROPRIETARY_RESTRICTED without written permission (PRD Section 11.3)",
                     field="license_status",
                 )
+

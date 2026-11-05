@@ -51,3 +51,4 @@ class PriceListing(Base, TimestampMixin):
 
     def __repr__(self) -> str:
         return f"<PriceListing {self.seller}: ₹{self.price_inr} for {self.size_ml}ml>"
+

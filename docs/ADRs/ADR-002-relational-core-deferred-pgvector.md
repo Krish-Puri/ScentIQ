@@ -24,3 +24,4 @@ The PRD explicitly states:
 
 ### Negative
 - Purely conversational natural language queries require structured intent parsing before SQL execution.
+

@@ -20,3 +20,4 @@ def compare_fragrances(
     service = ComparisonService(db)
     result = service.compare(request)
     return ResponseEnvelope.success(data=result)
+

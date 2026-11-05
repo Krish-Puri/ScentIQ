@@ -63,3 +63,4 @@ class AlternativeRelationship(Base, TimestampMixin):
             f"<AlternativeRelationship candidate={self.candidate_fragrance_id} "
             f"-> source={self.source_fragrance_id} [{self.relationship_type.value}, Grade {self.evidence_grade.value}]>"
         )
+

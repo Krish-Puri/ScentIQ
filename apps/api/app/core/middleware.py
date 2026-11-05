@@ -85,3 +85,4 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
         "field": None,
     }]
     return create_error_envelope(req_id, 500, errors)
+

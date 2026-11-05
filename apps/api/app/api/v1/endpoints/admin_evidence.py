@@ -108,3 +108,4 @@ def approve_alternative(
             candidate_concentration=updated.candidate_fragrance.concentration if updated.candidate_fragrance else None,
         )
     )
+

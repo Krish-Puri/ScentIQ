@@ -31,3 +31,4 @@ def readiness_check(db: Session = Depends(get_db)):
             "status": "ready" if db_status == "connected" else "degraded",
         }
     )
+

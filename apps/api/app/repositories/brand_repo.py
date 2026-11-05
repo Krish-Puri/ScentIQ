@@ -38,3 +38,4 @@ class BrandRepository:
         self.db.commit()
         self.db.refresh(brand)
         return brand
+

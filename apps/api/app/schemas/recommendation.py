@@ -45,3 +45,4 @@ class RecommendationResponse(BaseModel):
     results: List[RecommendationCard]
     session_id: str
     total_evaluated: int
+

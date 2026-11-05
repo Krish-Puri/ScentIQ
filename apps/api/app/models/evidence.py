@@ -66,3 +66,4 @@ class ClaimEvidence(Base, TimestampMixin):
 
     def __repr__(self) -> str:
         return f"<ClaimEvidence {self.entity_type}.{self.field_name} from source {self.source_id}>"
+

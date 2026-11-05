@@ -74,3 +74,4 @@ class AlternativeRepository:
         self.db.commit()
         self.db.refresh(rel)
         return rel
+
