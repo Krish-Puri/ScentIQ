@@ -8,9 +8,9 @@
     "build:web": "npm --prefix apps/web run build",
     "test:web": "npm --prefix apps/web run test",
     "lint:web": "npm --prefix apps/web run lint",
-    "dev:api": "cd apps/api && uvicorn app.main:app --reload --port 8000",
-    "test:api": "pytest apps/api/tests",
-    "migrate": "cd apps/api && alembic upgrade head",
+    "dev:api": "cd apps/api && python -m uvicorn app.main:app --reload --port 8000",
+    "test:api": "python -m pytest apps/api/tests",
+    "migrate": "cd apps/api && python -m alembic upgrade head",
     "test": "npm run test:api"
   },
   "workspaces": [
